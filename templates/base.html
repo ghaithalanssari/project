@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام البلاغات الأمنية - {% block title %}{% endblock %}</title>
+    
+    <!-- الخطوط -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- أيقونات Line Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/line-awesome/1.3.0/line-awesome/css/line-awesome.min.css">
+    
+    <!-- أنماط مخصصة -->
+    <style>
+        :root {
+            --primary: #63a58c;     /* أزرق حديث */
+            --secondary: #058f4f;   /* بنفسجي غامق */
+            --accent: #021a10;      /* سماوي */
+            --dark: #123829;        /* رمادي غامق */
+            --light: #005344;       /* خلفية فاتحة */
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: var(--light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            background: var(--dark) !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-bottom: 3px solid var(--accent);
+        }
+
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--accent) !important;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                        box-shadow 0.3s ease;
+            background: rgb(3, 95, 68);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-badge {
+            font-size: 0.85rem;
+            padding: 6px 16px;
+            border-radius: 20px;
+            background: var(--light);
+            color: var(--dark);
+            border: 1px solid var(--primary);
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        }
+
+        footer {
+            margin-top: auto;
+            background: var(--dark);
+            border-top: 3px solid var(--accent);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            border: none;
+            padding: 12px 28px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        .glass-effect {
+            background: rgba(9, 172, 109, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
+        }
+
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+    
+    {% block styles %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark py-3">
+        <div class="container">
+            <a class="navbar-brand fw-bold d-flex align-items-center" href="{{ url_for('home') }}">
+        
+                <header style="text-align: center; padding: 20px 0;">
+    <span class="gradient-text" style="font-size: 2.5rem;">
+        ادارة اﻷمن العام
+    </span>
+</header>
+
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav ms-auto gap-3">
+                    {% if current_user.is_authenticated %}
+                        {% if current_user.is_admin %}
+                        <a class="nav-link text-light" href="{{ url_for('admin_dashboard') }}">
+                            <i class="las la-user-shield me-1"></i>لوحة التحكم
+                        </a>
+                        {% else %}
+                        <a class="nav-link text-light" href="{{ url_for('dashboard') }}">
+                            <i class="las la-home me-1"></i>الرئيسية
+                        </a>
+                        {% endif %}
+                        <a class="nav-link text-light" href="{{ url_for('logout') }}">
+                            <i class="las la-sign-out-alt me-1"></i>تسجيل الخروج
+                        </a>
+                    {% else %}
+<header style="display: flex; justify-content: flex-end; align-items: center; padding: 1rem;">
+    <nav style="font-size: 1rem;">
+        <a class="nav-link text-light" href="{{ url_for('login') }}" style="margin-right: 50rem;">
+            <i class="las la-sign-in-alt me-1"></i>تسجيل الدخول
+        </a>
+        <a class="nav-link text-light" href="{{ url_for('register') }}"style="margin-right: 50.3rem;">
+            <i class="las la-user-plus me-1"></i>تسجيل جديد
+        </a>
+    </nav>
+</header>
+
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container my-5">
+        <!-- رسائل التنبيه -->
+        <div class="alert-container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} glass-effect alert-dismissible fade show animate-on-scroll">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="las la-{{ 'check-circle' if category == 'success' else 'exclamation-circle' }} me-2"></i>
+                            {{ message }}
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- الفوتر -->
+    <footer class="text-white py-4">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-4 text-center">
+                    <h5 class="mb-3">روابط سريعة</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white text-decoration-none">عن النظام</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">الشروط والأحكام</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">الدعم الفني</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-md-4 text-center">
+                    <h5 class="mb-3">اتصل بنا</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="las la-phone me-2"></i>+966 123 456 789</li>
+                        <li><i class="las la-envelope me-2"></i>support@security.com</li>
+                    </ul>
+                </div>
+                
+                <div class="col-md-4 text-center">
+                    <h5 class="mb-3">تابعنا</h5>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="#" class="text-white"><i class="lab la-twitter fa-lg"></i></a>
+                        <a href="#" class="text-white"><i class="lab la-instagram fa-lg"></i></a>
+                        <a href="#" class="text-white"><i class="lab la-linkedin fa-lg"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <hr class="my-4">
+            
+            <div class="text-center">
+                <p class="mb-0">
+                    © 2025 نظام البلاغات الأمنية في مدينة حمص. 
+                    <span class="text-accent">جميع الحقوق محفوظة - م.غيث اﻷنصاري</span>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- السكربتات -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Animation on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.animate-on-scroll').forEach((el) => {
+            observer.observe(el);
+        });
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,379 @@
+{% extends "base.html" %}
+
+{% block title %}تسجيل جديد{% endblock %}
+
+{% block content %}
+<div class="register-container">
+    <!-- Dynamic Background Elements -->
+    <div class="animated-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- Main Card -->
+    <div class="card glassmorphism-effect">
+        <!-- Holographic Header -->
+        <div class="card-header holographic-overlay">
+            <h2 class="floating-text">
+                <span class="text-stroke">أنشئ</span>
+                <span class="text-fill">حسابك</span>
+                <span class="text-gradient">الآن</span>
+            </h2>
+            <div class="liquid-wave"></div>
+        </div>
+
+        <!-- Registration Form -->
+        <div class="card-body">
+            <form method="POST" class="neon-form">
+                {{ form.hidden_tag() }}
+
+                <!-- Floating Input Groups -->
+                <div class="input-grid">
+                    <!-- Name Input -->
+                    <div class="input-group floating-input">
+                        {{ form.name(class="form-control", autocomplete="off") }}
+                        <label class="floating-label">
+                            <i class="fas fa-user-astronaut"></i>
+                            الاسم الكامل
+                        </label>
+                        <div class="input-highlight"></div>
+                    </div>
+
+                    <!-- Email Input -->
+                    <div class="input-group floating-input">
+                        {{ form.email(class="form-control", autocomplete="off") }}
+                        <label class="floating-label">
+                            <i class="fas fa-at"></i>
+                            البريد الإلكتروني
+                        </label>
+                        <div class="input-highlight"></div>
+                    </div>
+
+                    <!-- Phone Input -->
+                    <div class="input-group floating-input">
+                        {{ form.phone(class="form-control", autocomplete="off") }}
+                        <label class="floating-label">
+                            <i class="fas fa-mobile-alt"></i>
+                            رقم الهاتف
+                        </label>
+                        <div class="input-highlight"></div>
+                    </div>
+
+                    <!-- National ID Input -->
+                    <div class="input-group floating-input">
+                        {{ form.national_id(class="form-control", autocomplete="off") }}
+                        <label class="floating-label">
+                            <i class="fas fa-fingerprint"></i>
+                            الرقم الوطني
+                        </label>
+                        <div class="input-highlight"></div>
+                    </div>
+
+                    <!-- Password Input -->
+                    <div class="input-group floating-input">
+                        {{ form.password(class="form-control", autocomplete="off") }}
+                        <label class="floating-label">
+                            <i class="fas fa-lock"></i>
+                            كلمة المرور
+                        </label>
+                        <div class="input-highlight"></div>
+                    </div>
+                </div>
+
+                <!-- Animated Submit Button -->
+                <button type="submit" class="quantum-button">
+                    <span class="button-text">انضم إلينا</span>
+                    <div class="button-rays"></div>
+                    <div class="button-particles"></div>
+                </button>
+
+                <!-- Animated Login Link -->
+                <div class="login-link">
+                    <p>هل لديك حساب؟ 
+                        <a href="{{ url_for('login') }}" class="holographic-link">
+                            <span class="link-text">سجل الدخول</span>
+                            <div class="link-aura"></div>
+                        </a>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Floating Particles -->
+    <div class="particles-container">
+        <div class="particle p1"></div>
+        <div class="particle p2"></div>
+        <div class="particle p3"></div>
+        <!-- Add more particles as needed -->
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary-color: #5db8a1;
+        --secondary-color: #108f73;
+        --neon-color: #52f3e2;
+        --glass-bg: rgba(255, 255, 255, 0.1);
+    }
+
+    .register-container {
+        min-height: 75vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(45deg, #0f433f, #13795a);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .animated-blobs {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        filter: blur(60px);
+        z-index: 0;
+    }
+
+    .blob {
+        position: absolute;
+        background: linear-gradient(120deg, var(--primary-color), var(--secondary-color));
+        border-radius: 50%;
+        opacity: 0.15;
+        animation: blob-float 20s infinite linear;
+    }
+
+    .blob-1 { width: 400px; height: 400px; top: 20%; left: 10%; }
+    .blob-2 { width: 300px; height: 300px; top: 50%; right: 15%; }
+    .blob-3 { width: 250px; height: 250px; bottom: 10%; left: 40%; }
+
+    .card.glassmorphism-effect {
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        width: 800px;
+        z-index: 2;
+        position: relative;
+        transition: transform 0.4s, box-shadow 0.4s;
+    }
+
+    .card:hover {
+        transform: perspective(1000px) rotateX(2deg) rotateY(2deg);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .holographic-overlay {
+        position: relative;
+        padding: 2rem;
+        overflow: hidden;
+        background: linear-gradient(45deg, 
+            rgba(93, 184, 161, 0.3), 
+            rgba(16, 143, 115, 0.3));
+    }
+
+    .liquid-wave {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 20px;
+        background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1440 120" xmlns="http://www.w3.org/2000/svg"><path d="M1440 21.21V120H0V21.21C120 35.07 240 42 360 42s240-6.93 360-20.79c88.328-8.794 154.574-14.333 198.738-16.618A3120.562 3120.562 0 0 1 1440 21.21z" fill="%2352f3e2" fill-opacity="0.1"/></svg>') repeat-x;
+        animation: wave-flow 20s linear infinite;
+    }
+
+    .floating-text {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        font-size: 2.5rem;
+        text-shadow: 0 0 10px rgba(82, 243, 226, 0.5);
+    }
+
+    .text-stroke {
+        -webkit-text-stroke: 2px var(--neon-color);
+        color: transparent;
+    }
+
+    .text-fill {
+        background: linear-gradient(45deg, #0f7e8d, var(--neon-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .input-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+        padding: 2rem;
+    }
+
+    .floating-input {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-control {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        color: #fff !important;
+        height: 50px;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        background: rgba(255, 255, 255, 0.1) !important;
+        border-color: var(--neon-color);
+        box-shadow: 0 0 15px rgba(82, 243, 226, 0.3);
+    }
+
+    .floating-label {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: rgba(255, 255, 255, 0.6);
+        pointer-events: none;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-control:focus ~ .floating-label,
+    .form-control:not(:placeholder-shown) ~ .floating-label {
+        top: -10px;
+        left: 5px;
+        font-size: 0.8em;
+        color: var(--neon-color);
+    }
+
+    .input-highlight {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: var(--neon-color);
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus ~ .input-highlight {
+        width: 100%;
+    }
+
+    .quantum-button {
+        position: relative;
+        width: 100%;
+        padding: 1.2rem;
+        background: linear-gradient(45deg, 
+            var(--primary-color), 
+            var(--secondary-color));
+        border: none;
+        border-radius: 12px;
+        color: white;
+        font-weight: bold;
+        overflow: hidden;
+        transition: all 0.4s ease;
+    }
+
+    .quantum-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0 30px rgba(82, 243, 226, 0.4);
+    }
+
+    .button-rays {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at 50% 50%, 
+            rgba(255,255,255,0.4) 0%, 
+            transparent 70%);
+        animation: rays-rotate 4s linear infinite;
+    }
+
+    .button-particles {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="1" fill="%23ffffff"/></svg>');
+        opacity: 0.3;
+        animation: particles-float 20s linear infinite;
+    }
+
+    .holographic-link {
+        position: relative;
+        color: var(--neon-color);
+        text-decoration: none;
+    }
+
+    .link-aura {
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: currentColor;
+        transition: width 0.3s ease;
+    }
+
+    .holographic-link:hover .link-aura {
+        width: 100%;
+    }
+
+    .particles-container {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+    }
+
+    .particle {
+        position: absolute;
+        background: rgba(255,255,255,0.1);
+        border-radius: 50%;
+        animation: particles-flow 20s linear infinite;
+    }
+
+    @keyframes wave-flow {
+        0% { background-position-x: 0; }
+        100% { background-position-x: 1440px; }
+    }
+
+    @keyframes blob-float {
+        0%, 100% { transform: translate(0,0) scale(1); }
+        25% { transform: translate(50px, -30px) scale(1.1); }
+        50% { transform: translate(-40px, 20px) scale(0.9); }
+        75% { transform: translate(30px, -20px) scale(1.05); }
+    }
+
+    @keyframes rays-rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    @keyframes particles-flow {
+        0% { transform: translateY(100vh); }
+        100% { transform: translateY(-100vh); }
+    }
+
+    @media (max-width: 768px) {
+        .card.glassmorphism-effect {
+            width: 95%;
+            margin: 1rem;
+        }
+
+        .input-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .floating-text {
+            flex-direction: column;
+            align-items: center;
+            font-size: 2rem;
+        }
+    }
+</style>
+{% endblock %}

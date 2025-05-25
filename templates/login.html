@@ -1,0 +1,330 @@
+{% extends "base.html" %}
+
+{% block title %}تسجيل الدخول{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <!-- Floating Background Elements -->
+    <div class="floating-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- Main Card with Glass Morphism -->
+    <div class="card glass-card-3d">
+        <!-- Holographic Header -->
+        <div class="card-header holographic-banner">
+            <div class="dynamic-wave"></div>
+            <h2 class="neon-title">
+                <span class="neon-text">مرحبًا</span>
+                <span class="neon-pulse">بعودتك</span>
+            </h2>
+            <div class="particle-rain"></div>
+        </div>
+
+        <!-- Interactive Form -->
+        <div class="card-body">
+            <form method="POST" class="cyber-form">
+                {{ form.hidden_tag() }}
+
+                <!-- Floating Input Group -->
+                <div class="input-group quantum-input">
+                    {{ form.email(class="form-control", autocomplete="off") }}
+                    <label class="floating-label">
+                        <i class="fas fa-envelope cosmic-icon"></i>
+                        البريد الإلكتروني
+                    </label>
+                    <div class="input-aura"></div>
+                    <div class="error-pulse"></div>
+                </div>
+
+                <!-- Password Input Group -->
+                <div class="input-group quantum-input">
+                    {{ form.password(class="form-control", autocomplete="off") }}
+                    <label class="floating-label">
+                        <i class="fas fa-lock cosmic-icon"></i>
+                        كلمة المرور
+                    </label>
+                    <div class="input-aura"></div>
+                    <div class="error-pulse"></div>
+                </div>
+
+                <!-- Interactive Checkbox & Link -->
+                <div class="d-flex justify-content-between mb-4">
+                    <div class="form-check glow-check">
+                        <input class="form-check-input" type="checkbox" id="remember">
+                        <label class="form-check-label" for="remember">
+                            تذكرني
+                        </label>
+                    </div>
+
+                </div>
+                
+
+
+                <!-- Animated Submit Button -->
+                <button type="submit" class="quantum-btn">
+                    <span class="btn-content">
+                        <i class="fas fa-sign-in-alt"></i>
+                        دخول إلى الحساب
+                    </span>
+                    <div class="btn-energize"></div>
+                    <div class="btn-particles"></div>
+                </button>
+
+                <!-- Registration Link -->
+                <div class="text-center pt-4">
+                    <p class="holographic-text">
+                        ليس لديك حساب؟ 
+                <a href="{{ url_for('register') }}" class="cyber-link" style="color: #f1f1f1;">
+    <span class="link-text">أنشئ حسابًا الآن</span>
+    <div class="link-trail"></div>
+</a>
+
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Background Particles -->
+    <div class="cosmic-particles">
+        <div class="particle p1"></div>
+        <div class="particle p2"></div>
+        <div class="particle p3"></div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary: #51bba4;
+        --secondary: #04a381;
+        --neon: #ffffff;
+        --glass: rgba(229, 238, 234, 0.1);
+        --depth: 50px;
+    }
+
+    .login-container {
+        min-height: 75vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(circle at 50% 50%, #0f4340, #06755d);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .floating-orbs {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        filter: blur(80px);
+        z-index: 0;
+    }
+
+    .orb {
+        position: absolute;
+        border-radius: 50%;
+        background: linear-gradient(45deg, var(--primary), var(--secondary));
+        opacity: 0.15;
+        animation: orb-float 25s infinite linear;
+    }
+
+    .orb-1 { width: 400px; height: 400px; top: 20%; left: 10%; }
+    .orb-2 { width: 300px; height: 300px; top: 50%; right: 15%; }
+    .orb-3 { width: 250px; height: 250px; bottom: 10%; left: 40%; }
+
+    .glass-card-3d {
+        background: var(--glass);
+        backdrop-filter: blur(20px);
+        border-radius: 25px;
+        border: 2px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 8px 48px rgba(0, 0, 0, 0.4);
+        width: 800px;
+        z-index: 2;
+        transform: perspective(1500px) rotateX(5deg) rotateY(0);
+        transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    .glass-card-3d:hover {
+        transform: perspective(1500px) rotateX(3deg) rotateY(2deg);
+        box-shadow: 0 12px 60px rgba(0, 0, 0, 0.6);
+    }
+
+    .holographic-banner {
+        position: relative;
+        padding: 3rem;
+        overflow: hidden;
+        background: linear-gradient(135deg, 
+            rgba(70, 179, 146, 0.4), 
+            rgba(4, 163, 115, 0.4));
+    }
+
+    .dynamic-wave {
+        height: 30px;
+        background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1440 120" xmlns="http://www.w3.org/2000/svg"><path d="M1440 21.21V120H0V21.21C120 35.07 240 42 360 42s240-6.93 360-20.79c88.328-8.794 154.574-14.333 198.738-16.618A3120.562 3120.562 0 0 1 1440 21.21z" fill="%2352f3e2" fill-opacity="0.1"/></svg>') repeat-x;
+        animation: wave-flow 18s linear infinite;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+    }
+
+    .neon-title {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        font-size: 3rem;
+        text-shadow: 0 0 20px rgba(235, 248, 247, 0.6);
+    }
+
+    .neon-pulse {
+        animation: neon-pulse 1.5s ease-in-out infinite alternate;
+    }
+
+    .quantum-input {
+        position: relative;
+        margin-bottom: 2rem;
+    }
+
+    .quantum-input .form-control {
+        background: rgba(255, 255, 255, 0.08) !important;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        color: #ffffff !important;
+        height: 60px;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .quantum-input .form-control:focus {
+        background: rgba(255, 255, 255, 0.15) !important;
+        border-color: var(--neon);
+        box-shadow: 0 0 30px rgba(82, 243, 226, 0.4);
+        transform: translateZ(15px);
+    }
+
+    .floating-label {
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: rgba(255, 255, 255, 0.7);
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .form-control:focus ~ .floating-label,
+    .form-control:not(:placeholder-shown) ~ .floating-label {
+        top: -15px;
+        left: 10px;
+        font-size: 0.9em;
+        color: var(--neon);
+    }
+
+    .input-aura {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 3px;
+        background: var(--neon);
+        transition: all 0.4s ease;
+    }
+
+    .form-control:focus ~ .input-aura {
+        width: 100%;
+    }
+
+    .quantum-btn {
+        position: relative;
+        width: 100%;
+        padding: 1.5rem;
+        background: linear-gradient(135deg, 
+            var(--primary), 
+            var(--secondary));
+        border: none;
+        border-radius: 15px;
+        color: white;
+        font-weight: bold;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .quantum-btn:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 0 50px rgba(82, 243, 226, 0.6);
+    }
+
+    .btn-energize {
+        position: absolute;
+        width: 150%;
+        height: 150%;
+        background: radial-gradient(circle at 50% 50%, 
+            rgba(255,255,255,0.3) 0%, 
+            transparent 70%);
+        animation: energy-pulse 3s linear infinite;
+    }
+
+    .cosmic-particles {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+    }
+
+    .particle {
+        position: absolute;
+        background: rgba(255,255,255,0.1);
+        border-radius: 50%;
+        animation: cosmic-float 25s linear infinite;
+    }
+
+    @keyframes orb-float {
+        0%, 100% { transform: translate(0,0) scale(1) rotate(0deg); }
+        25% { transform: translate(60px, -40px) scale(1.1) rotate(15deg); }
+        50% { transform: translate(-50px, 30px) scale(0.9) rotate(-10deg); }
+        75% { transform: translate(40px, -30px) scale(1.05) rotate(5deg); }
+    }
+
+    @keyframes wave-flow {
+        0% { background-position-x: 0; }
+        100% { background-position-x: 1440px; }
+    }
+
+    @keyframes neon-pulse {
+        from { text-shadow: 0 0 10px rgba(82, 243, 226, 0.4); }
+        to { text-shadow: 0 0 30px rgba(82, 243, 226, 0.8); }
+    }
+
+    @keyframes energy-pulse {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 768px) {
+        .glass-card-3d {
+            width: 95%;
+            margin: 1rem;
+            transform: none !important;
+        }
+
+        .neon-title {
+            flex-direction: column;
+            align-items: center;
+            font-size: 2.2rem;
+        }
+
+        .quantum-input .form-control {
+            height: 55px;
+            padding: 0.8rem 1.2rem;
+        }
+
+        .quantum-btn {
+            padding: 1.2rem;
+            font-size: 1rem;
+        }
+    }
+</style>
+{% endblock %}

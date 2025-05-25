@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}الرئيسية{% endblock %}
+
+{% block styles %}
+<style>
+    .hero-section {
+        background: linear-gradient(45deg, rgba(3, 156, 110, 0.95), rgba(6, 95, 54, 0.95)), 
+                    url('https://i.ibb.co/4ZQ3YKY/security-bg.jpg');
+        background-size: cover;
+        background-position: center;
+        color: rgb(250, 250, 250);
+        padding: 8rem 0;
+        clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+    }
+
+    .feature-card {
+        width: auto;
+        height: auto;
+        background: rgba(3, 126, 85, 0.267);
+        backdrop-filter: blur(20px);
+        border: 5px solid rgba(1, 66, 36, 0.459);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+        background: rgba(5, 92, 70, 0.664);
+    }
+
+    .stats-badge {
+        background: rgba(1, 83, 63, 0.507);
+        padding: 8px 20px;
+        border-radius: 30px;
+        border: 1px solid rgba(9, 116, 62, 0.3);
+    }
+
+
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="container">
+        <div class="row justify-content-center animate-on-scroll">
+            <div class="col-lg-8 text-center">
+                <h1 class="display-3 fw-bold mb-4">نحو مجتمع أكثر أمانًا</h1>
+                <p class="lead mb-5 opacity-85">شاركنا في بناء بيئة آمنة من خلال الإبلاغ الفوري عن الحوادث الأمنية</p>
+                <div class="d-flex gap-3 justify-content-center">
+                    <a href="{{ url_for('register') }}" class="btn btn-light btn-lg px-5 rounded-pill">
+                        <i class="las la-user-plus me-2"></i>انضم إلينا
+                    </a>
+                    <a href="#features" class="btn btn-outline-light btn-lg px-5 rounded-pill">
+                        <i class="las la-info-circle me-2"></i>المميزات
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="features" class="py-5 bg-light">
+    <div class="container">
+        <div class="row g-5 justify-content-center">
+            <!-- بطاقة التبليغ الفوري -->
+            <div class="col-md-6 col-lg-4 animate-on-scroll" data-delay="0.2s">
+                <div class="feature-card text-center p-5 rounded-4">
+                    <div class="icon-wrapper mb-4">
+                        <i class="las la-bell la-3x text-primary"></i>
+                    </div>
+                    <h3 class="h4 mb-3">تبليغ فوري</h3>
+                    <p class="text-muted mb-4">أبلغ عن أي حادث أمني خلال 30 ثانية فقط</p>
+                    <div class="stats-badge d-inline-block">
+                        <span class="small">+15,000 بلاغ شهريًا</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- بطاقة المتابعة -->
+            <div class="col-md-6 col-lg-4 animate-on-scroll" data-delay="0.4s">
+                <div class="feature-card text-center p-5 rounded-4">
+                    <div class="icon-wrapper mb-4">
+                        <i class="las la-shield-alt la-3x text-success"></i>
+                    </div>
+                    <h3 class="h4 mb-3">متابعة حثيثة</h3>
+                    <p class="text-muted mb-4">فريق مختص لمتابعة البلاغات على مدار الساعة</p>
+                    <div class="stats-badge d-inline-block">
+                        <span class="small">95% معدل الاستجابة</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- بطاقة الدعم -->
+            <div class="col-md-6 col-lg-4 animate-on-scroll" data-delay="0.6s">
+                <div class="feature-card text-center p-5 rounded-4">
+                    <div class="icon-wrapper mb-4">
+                        <i class="las la-headset la-3x text-info"></i>
+                    </div>
+                    <h3 class="h4 mb-3">دعم فني</h3>
+                    <p class="text-muted mb-4">قوات الامن بخدمة المواطن على مدار 24 ساعة لحمايتكم</p>
+                    <div class="stats-badge d-inline-block">
+                        <span class="small">4.9/5 تقييم الخدمة</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- خريطة تفاعلية -->
+
+    </div>
+</section>
+
+<!-- قسم الإحصائيات -->
+<section class="py-7 gradient-bg text-white">
+    <div class="container">
+        <div class="row g-5 text-center">
+            <div class="col-md-4 animate-on-scroll">
+                <div class="display-4 fw-bold">+250K</div>
+                <p class="mb-0">بلاغ مسجل</p>
+            </div>
+            <div class="col-md-4 animate-on-scroll">
+                <div class="display-4 fw-bold">98%</div>
+                <p class="mb-0">معدل الرضا</p>
+            </div>
+            <div class="col-md-4 animate-on-scroll">
+                <div class="display-4 fw-bold">47</div>
+                <p class="mb-0">منطقة مغطاة</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // إضافة تأثيرات ظهور متدرجة مع تأخير
+    document.querySelectorAll('[data-delay]').forEach(el => {
+        el.style.transitionDelay = el.dataset.delay;
+    });
+</script>
+{% endblock %}

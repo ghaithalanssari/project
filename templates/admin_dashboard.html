@@ -1,0 +1,1326 @@
+{% extends "base.html" %}
+
+{% block title %}لوحة الإدارة{% endblock %}
+
+{% block content %}
+<div class="container admin-dashboard">
+    <!-- Header Section -->
+    <div class="dashboard-header">
+        <div class="header-content">
+            <h2 class="dashboard-title">
+                <i class="fas fa-user-shield"></i>
+                لوحة التحكم الإدارية
+            </h2>
+            <div class="complaint-counter">
+                <i class="fas fa-file-alt"></i>
+                <span>{{ complaints|length }}</span> بلاغ
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <div class="tabs-container">
+        <button class="tab-btn active" onclick="openTab('complaints')">
+            <i class="fas fa-list-alt"></i> البلاغات
+        </button>
+        <button class="tab-btn" onclick="openTab('users')">
+            <i class="fas fa-users"></i> المستخدمين
+        </button>
+    </div>
+
+    <!-- Complaints Tab -->
+    <div id="complaints-tab" class="tab-content active">
+        <div class="modern-card">
+            <div class="card-header">
+                <div class="header-flex">
+                    <h3 class="card-title">
+                        <i class="fas fa-list-alt"></i>
+                        جميع البلاغات
+                    </h3>
+                    <div class="action-buttons">
+                        <div class="search-box">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" id="complaints-search" placeholder="ابحث في البلاغات..." class="search-input">
+                        </div>
+                        <button class="print-btn" onclick="printTable('complaints-table')">
+                            <i class="fas fa-print"></i> طباعة
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <table class="modern-table" id="complaints-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>النوع</th>
+                            <th>الموقع</th>
+                            <th>الحالة</th>
+                            <th>المستخدم</th>
+                            <th>التاريخ</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for complaint in complaints %}
+                        <tr class="table-row" data-complaint-id="{{ complaint.id }}">
+                            <td>{{ complaint.id }}</td>
+                            <td>
+                                <span class="type-badge type-{{ complaint.type|lower|replace(' ', '-') }}">
+                                    <i class="fas fa-{{ 'exclamation-triangle' if complaint.type == 'سرقة' else 'user-shield' if complaint.type == 'اعتداء' else 'info-circle' }}"></i>
+                                    {{ complaint.type }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="location-cell">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>{{ complaint.location }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <form method="POST" action="{{ url_for('update_status', id=complaint.id) }}" onclick="event.stopPropagation()">
+                                    <select name="status" 
+                                        class="status-select status-{{ complaint.status|lower|replace(' ', '-') }}"
+                                        onchange="this.form.submit()">
+                                        <option value="جديد" {% if complaint.status == 'جديد' %}selected{% endif %}>جديد</option>
+                                        <option value="جاري المراجعة" {% if complaint.status == 'جاري المراجعة' %}selected{% endif %}>جاري المراجعة</option>
+                                        <option value="تم الحل" {% if complaint.status == 'تم الحل' %}selected{% endif %}>تم الحل</option>
+                                    </select>
+                                </form>
+                            </td>
+                            <td>
+                                <div class="user-info">
+                                    <div class="user-avatar" style="background-color: {{ ['#2A9D8F', '#264653', '#E9C46A', '#F4A261', '#E76F51'] | random }}">
+                                        {{ complaint.author.name|first|upper }}
+                                    </div>
+                                    <div class="user-details">
+                                        <div class="user-name">{{ complaint.author.name }}</div>
+                                        <div class="user-phone">{{ complaint.author.phone }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="date-time">
+                                    <div class="date">{{ complaint.created_at.strftime('%Y-%m-%d') }}</div>
+                                    <div class="time">{{ complaint.created_at.strftime('%H:%M') }}</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="actions-cell">
+                                    <button class="action-btn view-btn" onclick="showComplaintDetails(event, {{ complaint.id }})">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="action-btn delete-btn" onclick="deleteComplaint(event, {{ complaint.id }})">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Users Tab -->
+    <div id="users-tab" class="tab-content">
+        <div class="modern-card">
+            <div class="card-header">
+                <div class="header-flex">
+                    <h3 class="card-title">
+                        <i class="fas fa-users"></i>
+                        جميع المستخدمين
+                    </h3>
+                    <div class="action-buttons">
+                        <div class="search-box">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" id="users-search" placeholder="ابحث في المستخدمين..." class="search-input">
+                        </div>
+                        <button class="print-btn" onclick="printTable('users-table')">
+                            <i class="fas fa-print"></i> طباعة
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <table class="modern-table" id="users-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>الاسم</th>
+                            <th>البريد الإلكتروني</th>
+                            <th>رقم الهاتف</th>
+                            <th>الرقم الوطني</th>
+                            <th>عدد البلاغات</th>
+                            <th>نوع الحساب</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr class="table-row">
+                            <td>{{ user.id }}</td>
+                            <td>
+                                <div class="user-info">
+                                    <div class="user-avatar" style="background-color: {{ ['#2A9D8F', '#264653', '#E9C46A', '#F4A261', '#E76F51'] | random }}">
+                                        {{ user.name|first|upper }}
+                                    </div>
+                                    <div class="user-details">
+                                        {{ user.name }}
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.phone }}</td>
+                            <td>{{ user.national_id }}</td>
+                            <td>
+                                <span class="complaint-count">{{ user.complaints|length }}</span>
+                            </td>
+                            <td>
+                                <span class="account-badge {% if user.is_admin %}admin{% else %}user{% endif %}">
+                                    <i class="fas fa-{% if user.is_admin %}crown{% else %}user{% endif %}"></i>
+                                    {% if user.is_admin %}مسؤول{% else %}مستخدم{% endif %}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Complaint Details Modal -->
+<div id="complaint-details-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                <i class="fas fa-file-alt"></i>
+                تفاصيل البلاغ #<span id="complaint-id"></span>
+            </h2>
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+        </div>
+        
+        <div class="modal-body">
+            <div class="details-grid">
+                <div class="detail-card">
+                    <div class="detail-icon">
+                        <i class="fas fa-tag"></i>
+                    </div>
+                    <div class="detail-content">
+                        <div class="detail-label">النوع</div>
+                        <div class="detail-value" id="complaint-type"></div>
+                    </div>
+                </div>
+                
+                <div class="detail-card">
+                    <div class="detail-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="detail-content">
+                        <div class="detail-label">الموقع</div>
+                        <div class="detail-value" id="complaint-location"></div>
+                    </div>
+                </div>
+                
+                <div class="detail-card">
+                    <div class="detail-icon">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div class="detail-content">
+                        <div class="detail-label">الحالة</div>
+                        <div class="detail-value" id="complaint-status"></div>
+                    </div>
+                </div>
+                
+                <div class="detail-card">
+                    <div class="detail-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="detail-content">
+                        <div class="detail-label">التاريخ والوقت</div>
+                        <div class="detail-value" id="complaint-date"></div>
+                    </div>
+                </div>
+                
+                <div class="detail-card">
+                    <div class="detail-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="detail-content">
+                        <div class="detail-label">اسم المبلغ</div>
+                        <div class="detail-value" id="complaint-user"></div>
+                    </div>
+                </div>
+                
+                <div class="detail-card">
+                    <div class="detail-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div class="detail-content">
+                        <div class="detail-label">رقم الهاتف</div>
+                        <div class="detail-value" id="complaint-phone"></div>
+                    </div>
+                </div>
+                
+                <div class="detail-card full-width">
+                    <div class="detail-icon">
+                        <i class="fas fa-align-left"></i>
+                    </div>
+                    <div class="detail-content">
+                        <div class="detail-label">الوصف</div>
+                        <div class="detail-value" id="complaint-description"></div>
+                    </div>
+                </div>
+                
+<div class="detail-card full-width" id="complaint-images-container">
+                    <div class="detail-icon">
+                        <i class="fas fa-images"></i>
+                    </div>
+                    <div class="detail-content">
+                        <div class="detail-label">الصور المرفقة</div>
+                        <div class="images-grid" id="complaint-images"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn secondary-btn" onclick="closeModal()">
+                <i class="fas fa-times"></i> إغلاق
+            </button>
+            <button class="modal-btn primary-btn" onclick="printComplaintDetails()">
+                <i class="fas fa-print"></i> طباعة التفاصيل
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        /* Primary Colors */
+        --primary-color: #2A9D8F;
+        --primary-dark: #21867A;
+        --secondary-color: #264653;
+        --accent-color: #E9C46A;
+        --accent-dark: #D9B252;
+        
+        /* Status Colors */
+        --new-status: #94A3B8;
+        --in-progress-status: #0ABB8F;
+        --resolved-status: #10B981;
+        
+        /* Alert Colors */
+        --danger-color: #EF4444;
+        --danger-dark: #DC2626;
+        --warning-color: #F59E0B;
+        --success-color: #10B981;
+        
+        /* Text Colors */
+        --text-dark: #077729;
+        --text-medium: #475569;
+        --text-light: #F8FAFC;
+        
+        /* Backgrounds */
+        --bg-light: #f0f0f0;
+        --bg-dark: #010e0b;
+        --bg-card: #b2d3cc;
+        
+        /* Shadows */
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+        --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+        --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+        --shadow-xl: 0 20px 25px rgba(0,0,0,0.1);
+        
+        /* Borders */
+        --border-radius: 12px;
+        --border-radius-sm: 8px;
+        --border-color: rgba(0,0,0,0.1);
+    }
+
+    /* Base Styles */
+    body {
+        font-family: 'Tajawal', 'Segoe UI', sans-serif;
+        background-color: #045547;
+        color: var(--text-dark);
+    }
+
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    /* Dashboard Header */
+    .dashboard-header {
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .dashboard-title {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 12px 25px;
+        border-radius: var(--border-radius);
+        font-size: 1.5rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        box-shadow: var(--shadow-md);
+        margin: 0;
+    }
+
+    .complaint-counter {
+        background: var(--bg-card);
+        padding: 12px 20px;
+        border-radius: var(--border-radius);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: var(--shadow-sm);
+        font-weight: 500;
+        color: var(--text-medium);
+    }
+
+    .complaint-counter i {
+        color: var(--primary-color);
+    }
+
+    .complaint-counter span {
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+
+    /* Tabs Navigation */
+    .tabs-container {
+        display: flex;
+        margin-bottom: 25px;
+        border-bottom: 1px solid var(--border-color);
+        gap: 10px;
+    }
+
+    .tab-btn {
+        padding: 12px 25px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+        color: var(--text-medium);
+        position: relative;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0;
+    }
+
+    .tab-btn:hover {
+        color: var(--primary-color);
+    }
+
+    .tab-btn.active {
+        color: var(--primary-color);
+        font-weight: 600;
+        background-color: rgba(42, 157, 143, 0.1);
+    }
+
+    .tab-btn.active::after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: var(--primary-color);
+        border-radius: 3px 3px 0 0;
+    }
+
+    .tab-content {
+        display: none;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    /* Modern Card */
+    .modern-card {
+        background: var(--bg-card);
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+        margin-bottom: 30px;
+    }
+
+    .card-header {
+        padding: 20px 25px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .header-flex {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .card-title {
+        color: var(--secondary-color);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 1.25rem;
+    }
+
+    .card-title i {
+        color: var(--primary-color);
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .search-box {
+        position: relative;
+        display: flex;
+        align-items: center;
+        background: var(--bg-light);
+        border-radius: 30px;
+        padding: 8px 15px;
+        transition: all 0.3s ease;
+        border: 1px solid var(--border-color);
+    }
+
+    .search-box:hover {
+        border-color: var(--primary-color);
+    }
+
+    .search-icon {
+        color: var(--text-medium);
+        margin-left: 8px;
+    }
+
+    .search-input {
+        border: none;
+        background: transparent;
+        padding: 5px;
+        width: 180px;
+        transition: all 0.3s ease;
+        color: var(--text-dark);
+    }
+
+    .search-input:focus {
+        outline: none;
+        width: 220px;
+    }
+
+    .search-input::placeholder {
+        color: var(--text-medium);
+    }
+
+    .print-btn {
+        padding: 8px 15px;
+        border-radius: 30px;
+        border: none;
+        background: var(--bg-light);
+        color: var(--text-medium);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 1px solid var(--border-color);
+    }
+
+    .print-btn:hover {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+
+    /* Table Styles */
+    .table-container {
+        overflow-x: auto;
+        padding: 0 15px;
+    }
+
+    .modern-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin: 15px 0;
+    }
+
+    .modern-table th {
+        background: var(--bg-light);
+        color: var(--text-medium);
+        padding: 15px;
+        font-weight: 600;
+        text-align: right;
+        border-bottom: 2px solid var(--border-color);
+        position: sticky;
+        top: 0;
+    }
+
+    .modern-table td {
+        padding: 15px;
+        color: var(--text-dark);
+        border-bottom: 1px solid var(--border-color);
+        transition: all 0.2s ease;
+    }
+
+    .modern-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .table-row {
+        transition: all 0.2s ease;
+    }
+
+    .table-row:hover {
+        background-color: rgba(42, 157, 143, 0.05);
+        transform: translateX(5px);
+    }
+
+    /* Type Badges */
+    .type-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        gap: 6px;
+    }
+
+    .type-badge i {
+        font-size: 0.9em;
+    }
+
+    .type-theft { 
+        background: #FEE2E2; 
+        color: #DC2626; 
+        border-left: 3px solid #DC2626;
+    }
+    .type-assault { 
+        background: #FEF3C7; 
+        color: #D97706; 
+        border-left: 3px solid #D97706;
+    }
+    .type-other { 
+        background: #DBEAFE; 
+        color: #2563EB; 
+        border-left: 3px solid #2563EB;
+    }
+
+    /* Status Select */
+    .status-select {
+        padding: 8px 12px;
+        border-radius: 20px;
+        border: none;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 160px;
+        appearance: none;
+        background-position: left 12px center;
+        background-repeat: no-repeat;
+        padding-left: 35px;
+        font-size: 0.9rem;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .status-select:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(42, 157, 143, 0.3);
+    }
+
+    .status-new { 
+        background-color: #F1F5F9; 
+        color: #64748B;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'%3E%3C/circle%3E%3C/svg%3E");
+    }
+    .status-in-progress { 
+        background-color: #ECFDF5; 
+        color: #059669;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23059669' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 12h-4l-3 9L9 3l-3 9H2'%3E%3C/path%3E%3C/svg%3E");
+    }
+    .status-resolved { 
+        background-color: #F0FDF4; 
+        color: #16A34A;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2316A34A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+    }
+
+    /* User Info */
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        flex-shrink: 0;
+    }
+
+    .user-details {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .user-name {
+        font-weight: 500;
+        color: var(--text-dark);
+    }
+
+    .user-phone {
+        font-size: 0.85rem;
+        color: var(--text-medium);
+    }
+
+    /* Date & Time */
+    .date-time {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .date {
+        font-weight: 500;
+        color: var(--text-dark);
+    }
+
+    .time {
+        font-size: 0.85rem;
+        color: var(--text-medium);
+    }
+
+    /* Location Cell */
+    .location-cell {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .location-cell i {
+        color: var(--primary-color);
+    }
+
+    /* Actions Cell */
+    .actions-cell {
+        display: flex;
+        gap: 8px;
+    }
+
+    .action-btn {
+        width: 36px;
+        height: 36px;
+        border: none;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: var(--bg-light);
+        color: var(--text-medium);
+    }
+
+    .action-btn:hover {
+        transform: scale(1.1);
+    }
+
+    .view-btn:hover {
+        background: var(--primary-color);
+        color: rgb(113, 238, 180);
+    }
+
+    .delete-btn:hover {
+        background: var(--danger-color);
+        color: rgb(156, 56, 56);
+    }
+
+    /* Account Badge */
+    .account-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .account-badge i {
+        font-size: 0.9em;
+    }
+
+    .admin {
+        background: #E0F2FE;
+        color: #a10303;
+    }
+
+    .user {
+        background: #ECFDF5;
+        color: #065F46;
+    }
+
+    /* Complaint Count */
+    .complaint-count {
+        display: inline-block;
+        min-width: 24px;
+        text-align: center;
+        background: var(--primary-color);
+        color: white;
+        border-radius: 12px;
+        padding: 2px 8px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    /* Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        overflow: auto;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .modal-content {
+        background-color: var(--bg-card);
+        margin: 5% auto;
+        padding: 0;
+        border-radius: var(--border-radius);
+        width: 90%;
+        max-width: 800px;
+        box-shadow: var(--shadow-xl);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .modal-header {
+        padding: 20px 25px;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-title {
+        color: var(--secondary-color);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 1.25rem;
+    }
+
+    .modal-title i {
+        color: var(--primary-color);
+    }
+
+    .close-btn {
+        color: var(--text-medium);
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .close-btn:hover {
+        color: var(--danger-color);
+        transform: rotate(90deg);
+    }
+
+    .modal-body {
+        padding: 25px;
+    }
+
+    /* Details Grid */
+    .details-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+    }
+
+    .detail-card {
+        background: var(--bg-light);
+        border-radius: var(--border-radius-sm);
+        padding: 15px;
+        display: flex;
+        gap: 15px;
+        transition: all 0.3s ease;
+        border-left: 4px solid var(--primary-color);
+    }
+
+    .detail-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .detail-card.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .detail-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--primary-color);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 1.1rem;
+    }
+
+    .detail-content {
+        flex: 1;
+    }
+
+    .detail-label {
+        font-weight: 600;
+        color: var(--text-medium);
+        font-size: 0.9rem;
+        margin-bottom: 5px;
+    }
+
+    .detail-value {
+        color: var(--text-dark);
+        font-size: 1rem;
+    }
+
+    /* Images Grid */
+    .images-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 15px;
+        margin-top: 15px;
+    }
+
+    .images-grid img {
+        width: 100%;
+        height: 120px;
+        object-fit: cover;
+        border-radius: var(--border-radius-sm);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .images-grid img:hover {
+        transform: scale(1.05);
+        box-shadow: var(--shadow-md);
+    }
+
+    /* Modal Footer */
+    .modal-footer {
+        padding: 20px 25px;
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        justify-content: flex-end;
+        gap: 15px;
+    }
+
+    .modal-btn {
+        padding: 10px 20px;
+        border-radius: var(--border-radius-sm);
+        border: none;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .primary-btn {
+        background: var(--primary-color);
+        color: white;
+    }
+
+    .primary-btn:hover {
+        background: var(--primary-dark);
+    }
+
+    .secondary-btn {
+        background: var(--bg-light);
+        color: var(--text-medium);
+        border: 1px solid var(--border-color);
+    }
+
+    .secondary-btn:hover {
+        background: #f1f1f1;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 992px) {
+        .dashboard-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+        .header-flex {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .action-buttons {
+            width: 100%;
+            justify-content: space-between;
+        }
+        
+        .search-box {
+            flex-grow: 1;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .tabs-container {
+            overflow-x: auto;
+            white-space: nowrap;
+            padding-bottom: 5px;
+        }
+        
+        .tab-btn {
+            padding: 10px 15px;
+            font-size: 0.9rem;
+        }
+        
+        .details-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .modal-content {
+            width: 95%;
+            margin: 20px auto;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .container {
+            padding: 15px;
+        }
+        
+        .dashboard-title {
+            font-size: 1.2rem;
+            padding: 10px 15px;
+        }
+        
+        .complaint-counter {
+            padding: 8px 15px;
+        }
+        
+        .card-header {
+            padding: 15px;
+        }
+        
+        .modal-body {
+            padding: 15px;
+        }
+        
+        .modal-footer {
+            padding: 15px;
+        }
+    }
+
+    /* Print Styles */
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        .tab-content.active, .tab-content.active * {
+            visibility: visible;
+        }
+        .tab-content.active {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+        }
+        .card-header, .action-buttons {
+            display: none;
+        }
+        .modern-table {
+            width: 100%;
+            border: 1px solid #ddd;
+        }
+        .modern-table th, .modern-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        .modern-table th {
+            background-color: #f2f2f2;
+        }
+    }
+</style>
+
+<script>
+    // Wait for the DOM to be fully loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add click event listeners to all complaint rows
+        const complaintRows = document.querySelectorAll('#complaints-table tbody tr');
+        complaintRows.forEach(row => {
+            row.addEventListener('click', function(event) {
+                // Don't open details if clicking on a form element or button
+                if (event.target.tagName === 'SELECT' || event.target.closest('button')) {
+                    return;
+                }
+                const complaintId = this.getAttribute('data-complaint-id');
+                showComplaintDetails(event, complaintId);
+            });
+        });
+
+        // Search functionality for complaints
+        document.getElementById('complaints-search').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#complaints-table tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
+        // Search functionality for users
+        document.getElementById('users-search').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#users-table tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+    });
+
+    function openTab(tabName) {
+        // Hide all tab contents
+        document.querySelectorAll('.tab-content').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        
+        // Remove active class from all tab buttons
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // Show the selected tab content
+        document.getElementById(tabName + '-tab').classList.add('active');
+        
+        // Add active class to the clicked button
+        event.currentTarget.classList.add('active');
+    }
+
+    // Print table function
+    function printTable(tableId) {
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>طباعة الجدول</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; direction: rtl; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                        th, td { border: 1px solid #ddd; padding: 8px; text-align: right; }
+                        th { background-color: #f2f2f2; }
+                        h2 { text-align: center; margin-bottom: 20px; }
+                        .print-date { text-align: left; margin-bottom: 10px; }
+                    </style>
+                </head>
+                <body>
+                    <h2>${tableId === 'complaints-table' ? 'تقرير البلاغات' : 'تقرير المستخدمين'}</h2>
+                    <div class="print-date">تاريخ الطباعة: ${new Date().toLocaleString()}</div>
+                    ${document.getElementById(tableId).outerHTML}
+                    <script>
+                        window.onload = function() {
+                            window.print();
+                            window.close();
+                        };
+                    <\/script>
+                </body>
+            </html>
+        `);
+        printWindow.document.close();
+    }
+
+    // Show complaint details modal
+    function showComplaintDetails(event, complaintId) {
+        event.stopPropagation();
+        
+        // In a real application, you would fetch the complaint details from the server
+        // For this example, we'll simulate it with the data we have
+        
+        // Find the complaint in the table
+        const complaintRow = document.querySelector(`#complaints-table tr[data-complaint-id="${complaintId}"]`);
+        
+        if (complaintRow) {
+            // Extract data from the row
+            const complaintData = {
+                id: complaintRow.cells[0].textContent,
+                type: complaintRow.cells[1].querySelector('.type-badge').textContent.trim(),
+                location: complaintRow.cells[2].textContent.trim(),
+                status: complaintRow.cells[3].querySelector('select').value,
+                userName: complaintRow.cells[4].querySelector('.user-name').textContent.trim(),
+                userPhone: complaintRow.cells[4].querySelector('.user-phone').textContent.trim(),
+                date: complaintRow.cells[5].querySelector('.date').textContent.trim(),
+                time: complaintRow.cells[5].querySelector('.time').textContent.trim(),
+                // These would normally come from the server
+                description: "هذا وصف مفصل للبلاغ الذي تم تقديمه من قبل المستخدم. يحتوي على كافة التفاصيل المتعلقة بالحادثة المبلغ عنها.",
+                images: [
+                    "https://via.placeholder.com/300x200?text=صورة+1",
+                    "https://via.placeholder.com/300x200?text=صورة+2",
+                    "https://via.placeholder.com/300x200?text=صورة+3"
+                ]
+            };
+            
+            // Populate the modal with the complaint data
+            document.getElementById('complaint-id').textContent = complaintData.id;
+            document.getElementById('complaint-type').textContent = complaintData.type;
+            document.getElementById('complaint-location').textContent = complaintData.location;
+            document.getElementById('complaint-status').textContent = complaintData.status;
+            document.getElementById('complaint-date').textContent = `${complaintData.date} - ${complaintData.time}`;
+            document.getElementById('complaint-user').textContent = complaintData.userName;
+            document.getElementById('complaint-phone').textContent = complaintData.userPhone;
+            document.getElementById('complaint-description').textContent = complaintData.description;
+            
+            // Add images to the modal
+            const imagesContainer = document.getElementById('complaint-images');
+            imagesContainer.innerHTML = '';
+            
+            if (complaintData.images && complaintData.images.length > 0) {
+                complaintData.images.forEach(imgUrl => {
+                    const imgElement = document.createElement('img');
+                    imgElement.src = imgUrl;
+                    imgElement.alt = 'صورة البلاغ';
+                    imagesContainer.appendChild(imgElement);
+                });
+                document.getElementById('complaint-images-container').style.display = 'block';
+            } else {
+                document.getElementById('complaint-images-container').style.display = 'none';
+            }
+            
+            // Show the modal
+            document.getElementById('complaint-details-modal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    // Close modal function
+    function closeModal() {
+        document.getElementById('complaint-details-modal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    // Print complaint details
+    function printComplaintDetails() {
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>طباعة تفاصيل البلاغ</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; direction: rtl; }
+                        h2 { text-align: center; color: #2A9D8F; }
+                        .detail-item { margin-bottom: 15px; }
+                        .detail-label { font-weight: bold; color: #264653; }
+                        .print-date { text-align: left; margin-bottom: 20px; }
+                        .images-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 15px; }
+                        .images-grid img { width: 100%; height: auto; border: 1px solid #ddd; }
+                    </style>
+                </head>
+                <body>
+                    <h2>تفاصيل البلاغ #${document.getElementById('complaint-id').textContent}</h2>
+                    <div class="print-date">تاريخ الطباعة: ${new Date().toLocaleString()}</div>
+                    
+                    <div class="detail-item">
+                        <span class="detail-label">النوع:</span>
+                        <span>${document.getElementById('complaint-type').textContent}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">الموقع:</span>
+                        <span>${document.getElementById('complaint-location').textContent}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">الحالة:</span>
+                        <span>${document.getElementById('complaint-status').textContent}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">التاريخ والوقت:</span>
+                        <span>${document.getElementById('complaint-date').textContent}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">اسم المبلغ:</span>
+                        <span>${document.getElementById('complaint-user').textContent}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">رقم الهاتف:</span>
+                        <span>${document.getElementById('complaint-phone').textContent}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">الوصف:</span>
+                        <p>${document.getElementById('complaint-description').textContent}</p>
+                    </div>
+                    
+                    <script>
+                        window.onload = function() {
+                            window.print();
+                            window.close();
+                        };
+                    <\/script>
+                </body>
+            </html>
+        `);
+        printWindow.document.close();
+    }
+
+    // Delete complaint function
+    function deleteComplaint(event, complaintId) {
+        event.stopPropagation();
+        if (confirm('هل أنت متأكد أنك تريد حذف هذا البلاغ؟')) {
+            // In a real application, you would send a request to the server to delete the complaint
+            alert(`تم حذف البلاغ #${complaintId}`);
+            // Then you would refresh the table or remove the row from the DOM
+            event.target.closest('tr').remove();
+        }
+    }
+
+    // Close modal when clicking outside of it
+    window.onclick = function(event) {
+        const modal = document.getElementById('complaint-details-modal');
+        if (event.target == modal) {
+            closeModal();
+        }
+    }
+</script>
+{% endblock %}

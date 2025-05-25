@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}بلاغ جديد{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+            <div class="modern-form-card">
+                <!-- Form Header -->
+                <div class="form-header">
+                    <div class="header-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h1 class="form-title">تقديم بلاغ جديد</h1>
+                    <p class="form-subtitle">ساعدنا في تحسين الخدمة من خلال الإبلاغ عن الحوادث</p>
+                </div>
+
+                <!-- Form Body -->
+                <div class="form-body">
+                    <form method="POST" class="needs-validation" novalidate>
+                        {{ form.hidden_tag() }}
+
+                        <!-- Type Field -->
+                        <div class="form-group mb-4">
+                            <label class="form-label">
+                                <i class="fas fa-tag me-2"></i>نوع البلاغ
+                            </label>
+                            <div class="input-group">
+                                {{ form.type(class="form-select form-select-lg shadow-sm") }}
+                            </div>
+                        </div>
+
+                        <!-- Location Field -->
+                        <div class="form-group mb-4">
+                            <label class="form-label">
+                                <i class="fas fa-map-marker-alt me-2"></i>الموقع
+                            </label>
+                            <div class="input-group">
+                                {{ form.location(class="form-control form-control-lg shadow-sm", 
+                                    placeholder="أدخل الموقع بالتفصيل") }}
+                            </div>
+                        </div>
+
+                        <!-- Description Field -->
+                        <div class="form-group mb-5">
+                            <label class="form-label">
+                                <i class="fas fa-align-left me-2"></i>وصف الحادثة
+                            </label>
+                            <div class="input-group">
+                                {{ form.description(class="form-control form-control-lg shadow-sm", rows=5,
+                                    placeholder="صف الحادثة بالتفصيل (الوقت، التفاصيل، أي معلومات إضافية)") }}
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn-submit">
+                                <i class="fas fa-paper-plane me-2"></i>إرسال البلاغ
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary-color: #2A9D8F;
+        --secondary-color: #264653;
+        --accent-color: #E9C46A;
+        --text-dark: #2D3748;
+        --text-light: #F8FAFC;
+    }
+
+    .modern-form-card {
+        background: #FFFFFF;
+        border-radius: 1.5rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        overflow: hidden;
+        transition: transform 0.3s ease;
+    }
+
+    .modern-form-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .form-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: var(--text-light);
+        padding: 2.5rem 2rem;
+        text-align: center;
+        position: relative;
+    }
+
+    .header-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem;
+        color: var(--accent-color);
+    }
+
+    .form-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-subtitle {
+        font-size: 1rem;
+        opacity: 0.9;
+        margin-bottom: 0;
+    }
+
+    .form-body {
+        padding: 2.5rem 2rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 0.75rem;
+        display: block;
+    }
+
+    .form-control-lg, .form-select-lg {
+        border: 2px solid #e2e8f0;
+        border-radius: 0.75rem;
+        padding: 1rem 1.25rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control-lg:focus, .form-select-lg:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.2);
+    }
+
+    .btn-submit {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 1.25rem 2rem;
+        border: none;
+        border-radius: 0.75rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(42, 157, 143, 0.3);
+    }
+
+    @media (max-width: 768px) {
+        .modern-form-card {
+            border-radius: 1rem;
+        }
+        
+        .form-title {
+            font-size: 1.75rem;
+        }
+        
+        .form-body {
+            padding: 2rem 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
